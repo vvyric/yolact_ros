@@ -273,7 +273,7 @@ class YolactNode:
 
       return img_numpy
 
-  def generate_detections_msg(self, classes, scores, boxes, masks, image_header):
+  def generate_detections_msg(self, classes, scores, boxes, masks, image_header, cv_image):
     dets_msg = Detections()
     for detnum in range(len(classes)):
       det = Detection()
@@ -284,10 +284,14 @@ class YolactNode:
       det.box.y1 = int(y1)
       det.box.x2 = int(x2)
       det.box.y2 = int(y2)
-      mask = masks[detnum,y1:y2,x1:x2]
-      det.mask.mask = np.packbits(mask.bool().cpu()).tolist()
+      # mask = masks[detnum,y1:y2,x1:x2] # crop mask
+      mask = masks[detnum,:,:] # full mask (image size)
+      # det.mask.mask = np.packbits(mask.bool().cpu()).tolist()
+      det.mask.mask = mask.to(torch.uint8).cpu().flatten().tolist() # no packbits
+      
       det.mask.height = int(y2 - y1)
       det.mask.width = int(x2 - x1)
+      det.mask.image_shape = cv_image.shape
       dets_msg.detections.append(det)
 
       #encoding_correct = True
@@ -321,7 +325,7 @@ class YolactNode:
         image = self.prep_display(classes, scores, boxes, masks, frame, fps_str=str(self.fps))
 
       if self.publish_detections:
-        dets = self.generate_detections_msg(classes, scores, boxes, masks, image_header)
+        dets = self.generate_detections_msg(classes, scores, boxes, masks, image_header, cv_image)
         self.detections_pub.publish(dets)
 
       if self.display_visualization:
