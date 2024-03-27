@@ -121,25 +121,27 @@ bool pcd_processing::cut_point_cloud(cloudPtr &input, const std::vector<Detectio
     //     std::vector<uint8_t> mask;  // Mask data
     //     int mask_width, mask_height;  // Dimensions of the mask
     // };
-        int min_x = detection.x1;
-        int min_y = detection.y1;
-        int width = detection.mask_width;
-        int height = detection.mask_height;
+        if (detection.class_name == detection.chosen_class || detection.chosen_class == "None"){
+            int min_x = detection.x1;
+            int min_y = detection.y1;
+            int width = detection.mask_width;
+            int height = detection.mask_height;
 
-        int number_of_ones = pcd_processing::countOnes(detection.mask);
-        ROS_INFO_STREAM("number_of_ones:");
-        ROS_INFO_STREAM(number_of_ones);
+            int number_of_ones = pcd_processing::countOnes(detection.mask);
+            ROS_INFO_STREAM("number_of_ones:");
+            ROS_INFO_STREAM(number_of_ones);
 
-        // Iterate over the points in the bounding box
-        for (int i = min_y; i < min_y + height; ++i) {
-            for (int j = min_x; j < min_x + width; ++j) {
-                // Check if the mask includes this point
-                if (detection.mask(i, j) == 1) {
-                    // Calculate the index in the point cloud
-                    int index = i * input->width + j;
-                    if (index < input->points.size()) {
-                        // Add the point to the output cloud
-                        objects->points.push_back(input->points[index]);
+            // Iterate over the points in the bounding box
+            for (int i = min_y; i < min_y + height; ++i) {
+                for (int j = min_x; j < min_x + width; ++j) {
+                    // Check if the mask includes this point
+                    if (detection.mask(i, j) == 1) {
+                        // Calculate the index in the point cloud
+                        int index = i * input->width + j;
+                        if (index < input->points.size()) {
+                            // Add the point to the output cloud
+                            objects->points.push_back(input->points[index]);
+                        }
                     }
                 }
             }
@@ -202,6 +204,7 @@ std::vector<pcd_processing::Detection> pcd_processing::Detections_msg_processing
         detection.image_height = Detection_msg.mask.image_shape[0];
         detection.image_width = Detection_msg.mask.image_shape[1];
         detection.area = Detection_msg.mask.width * Detection_msg.mask.height;
+        detection.chosen_class = Detection_msg.mask.chosen_class;
         detections.push_back(detection);
 
 

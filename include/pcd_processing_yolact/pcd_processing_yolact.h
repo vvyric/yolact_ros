@@ -103,6 +103,7 @@ private:
         int mask_width, mask_height;  // Dimensions of the mask
         int image_width, image_height;  // Dimensions of the image
         int area;
+        std::string chosen_class;
     };
 
     /**

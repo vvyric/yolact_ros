@@ -107,7 +107,7 @@ class YolactNode:
     self.score_threshold = 0.0
     self.crop_masks = True
     self.top_k = 5
-
+    self.chosen_class = ''
     self.image_sub = None # subscriber is created in dynamic_reconfigure callback
 
     # for counting fps
@@ -292,6 +292,7 @@ class YolactNode:
       det.mask.height = int(y2 - y1)
       det.mask.width = int(x2 - x1)
       det.mask.image_shape = cv_image.shape
+      det.mask.chosen_class = self.chosen_class
       dets_msg.detections.append(det)
 
       #encoding_correct = True
@@ -398,7 +399,9 @@ class YolactNode:
         self.crop_masks = config.crop_masks
     if level & (1 << 11): # top_k
         self.top_k = config.top_k
-
+    if level & (1 << 12): # chosen_class
+        self.chosen_class = config.chosen_class
+        print('Chosen class: ' + self.chosen_class)
     return config
 
 def main(args):
