@@ -1,10 +1,14 @@
 ```
-  rosrun yolact_ros yolact_ros _model_path:="$(rospack find yolact_ros)/scripts/yolact/weights/yolact_base_54_800000.pth" _image_topic:="/xtion/rgb/image_raw"
+rosrun yolact_ros yolact_ros _model_path:="$(rospack find yolact_ros)/scripts/yolact/weights/yolact_base_54_800000.pth" _image_topic:="/xtion/rgb/image_raw"
   
   rosrun rqt_reconfigure rqt_reconfigure
 ```
 
+Don't forget to create a weight folder in yolact_ros/yolact, and download yolact_base_54_800000.pth
 
+Modifed version of original project.
+
+Add pointcloud processing related things 
 
 
 
