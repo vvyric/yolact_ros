@@ -10,7 +10,7 @@ Modifed version of original project.
 
 Add pointcloud processing related things 
 
-
+Change the way the masks being packed and published. Not using np.packbits anymore. Now the mask will be published as binary mask with the same shape of original image. add image shape as msg. 
 
 # yolact_ros
 
